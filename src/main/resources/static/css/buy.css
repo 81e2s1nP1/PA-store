@@ -1,0 +1,60 @@
+@charset "ISO-8859-1";
+body {
+	height: 600px;
+	width: 90%;
+}
+
+.container-img, .container-infor {
+	margin: 50px 0 0 50px;
+	width: 45%;
+	height: 460px;
+	border-style: solid;
+}
+
+.buy-img {
+	width: 100%;
+	height: 100%;
+}
+
+.margin-left {
+	margin-left: 50px;
+}	
+
+.form-labels {
+	width: 350px;
+	margin: 15px 0 15px 0;
+}
+
+.total-title {
+	font-size: 25px;
+}
+
+#total-pay {
+	font-size: 20px;
+	font-weight: 400;
+	margin-left: 15px;
+	align-items: center;
+}
+
+.content-tksu {
+	margin-top: 5px;
+	color: mediumseagreen;
+	font-weight: 500;
+}
+
+.btn-buy, .btn-cancel {
+	width: 60px;
+	margin: 20px;
+}
+
+.buy, .cancel {
+	border-style: none;
+	color: white;
+	width: 65px;
+	height: 40px;
+}
+
+.cotainer-brand {
+	width: 400px;
+	height: 40px;
+}

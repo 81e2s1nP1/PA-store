@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>PA-Store</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+		integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+		crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
+		integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz"
+		crossorigin="anonymous"></script>
+	<th:replace="~{::content}">
+		</th:replace>
+</head>
+
+<body>
+	<section>
+		<!-- Page content -->
+		<div class="container mt-40">
+			<div class="row">
+				<!-- Menu left -->
+				<div class="col-lg-3">
+					<div class="list-group ">
+						<a th:each="brand : ${brands}" class="list-group-item list-group-item-action"
+							th:href="'/brand?brandname=' + ${brand}" th:text="${brand}">
+						</a>
+					</div>
+					<div></div>
+				</div>
+				<!-- End Menu left -->
+
+				<!-- Slider and Products -->
+				<div class="col-lg-9">
+					<!-- Slider -->
+					<div id="carouselExampleIndicators" class="carousel slide mb-4" data-bs-ride="true">
+						<div class="carousel-indicators">
+							<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
+								class="active" aria-current="true" aria-label="Slide 1"></button>
+							<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+								aria-label="Slide 2"></button>
+							<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+								aria-label="Slide 3"></button>
+						</div>
+						<div class="carousel-inner">
+							<div class="carousel-item active">
+								<img src="img/slider/3%20.png" class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="img/slider/2%20.png" class="d-block w-100" alt="...">
+							</div>
+						</div>
+						<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+							data-bs-slide="prev">
+							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Previous</span>
+						</button>
+						<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+							data-bs-slide="next">
+							<span class="carousel-control-next-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Next</span>
+						</button>
+					</div>
+					<!-- End Slider -->
+					<!-- Products -->
+					<!-- test -->
+					<div class="row">
+						<th:block th:each="sanPham : ${products}">
+							<div class="col-lg-4 col-md-6 mb-4">
+								<div class="card h-100 ">
+									<a th:href="'/detail-product?id=' + ${sanPham.getP().getId()}"><img
+											class="card-img-top" th:src="${sanPham.getPic()}" alt=""></a>
+									<div class="card-body">
+										<p style="font-size: 100%; word-wrap: break-word;" class="card-title">
+											<a th:href="'/detail-product?id=' + ${sanPham.getP().getId()}"
+												th:text="${sanPham.getP().getTen_san_pham()}">
+											</a>
+										</p>
+										<span class="row">
+											<h5 th:text="${sanPham.getP().getGiaban()} + ' $'">
+											</h5>
+										</span>
+										<p class="card-text" th:text="${sanPham.getP().getMota()}">
+										</p>
+										<p class="card-text">
+											số lượng: <span class="card-text"
+												th:text="${sanPham.getP().getSoluong()}"></span>
+										</p>
+									</div>
+									<form action="detail-product" method="get">
+										<input type="hidden" th:value="${sanPham.getP().getId()}" name="id">
+										<button type="submit" class="mua">Buy</button>
+										<th:block th:if="${user != null}">
+											<th:block th:if="${user.getRoles() == 'ROLE_ADMIN'}">
+												<a>Edit</a>
+											</th:block>
+											</th:block>
+									</form>
+									<div class="card-footer">
+										<small class="text-muted">&#9733; &#9733; &#9733;
+											&#9733; &#9734;</small>
+									</div>
+								</div>
+							</div>
+						</th:block>
+					</div>
+
+					<!-- nav skip -->
+					<div class="nav-paging">
+						<nav aria-label="Page navigation example">
+							<ul class="pagination">
+								<li class="page-item"><a class="page-link" href="/?p=0">First</a></li>
+								<li class="page-item">
+									<a class="page-link" th:href="'/?p='+${current - 6 > 0 ? current - 6 : 0}">
+										<i class="fa-solid fa-arrow-left"></i>
+									</a>
+								</li>
+								<li class="page-item">
+									<a class="page-link"
+										th:href="'/?p='+${current + 6 > last + 2 ? last : current + 6}">
+										<i class="fa-solid fa-arrow-right"></i>
+									</a>
+								</li>
+								<li class="page-item"><a class="page-link" th:href="'/?p='+${last}">Last</a></li>
+							</ul>
+						</nav>
+					</div>
+					<!--end nav skip -->
+					<!-- End Products -->
+				</div>
+				<!-- End Slider and Products -->
+			</div>
+		</div>
+		<!-- End Page content -->
+
+		<!-- Footer -->
+		<footer class="color">
+			<ul class="nav justify-content-center border-bottom pb-3 mb-3 container footer">
+				<li class="nav-item"><a href="/" class="nav-link px-2 text-muted">Trag chủ</a></li>
+				<li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Quy định giao hàng</a></li>
+				<li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Quy định trả hàng</a></li>
+				<li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Liên hệ</a></li>
+				<li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Blogs</a></li>
+				<th:block th:each="brand: ${brands}">
+					<li class="nav-item"><a th:href="'/brand?brandname=' + ${brand}" class="nav-link px-2 text-muted"
+							th:text="${brand}"></a></li>
+				</th:block>
+			</ul>
+			<p class="text-center text-muted">© 2023 PA.vn, Inc</p>
+		</footer>
+		<!-- End footer -->
+		<th:include th:fragment="stylesheets">
+			<link rel="stylesheet" href="/css/home.css">
+		</th:include>
+
+	</section>
+
+</body>
+
+</html>

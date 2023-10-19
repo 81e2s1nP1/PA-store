@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+<html>
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Create Order</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<th:replace="~{::content}">
+		</th:replace>
+</head>
+
+<body>
+	<section>
+		<div class="row margin-left">
+			<div class="container-img">
+				<img th:src="${img.getPic()}" class="buy-img" alt="...">
+			</div>
+			<div class="container-infor">
+				<div class="container-title text-center">
+					<h3 class="">Xác nhận đơn hàng</h3>
+				</div>
+				<form action="buyed" method="post">
+					<div class="cotainer-size">
+						<span class="title-label">Tee [[${brand.brand_name}]] [[${brand.product.ten_san_pham}]] , size</span>
+						<select class="select list-size" name="size">
+							<th:block th:each="size : ${sizes}">
+								<option th:value="${size.getSize_ao()}">[[${size.getSize_ao()}]]
+								</option>
+							</th:block>
+						</select>
+					</div>
+					<div class="form-labels">
+						<input type="text" id="form3Example1q" class="form-control address" name="address" required
+							placeholder="Nhập địa chỉ nhận hàng">
+						<p id="msg-address" style="color: red;"></p>
+					</div>
+
+					<div class="form-labels">
+						<input type="text" id="form3Example1q" class="form-control sdt" name="sdt" required
+							placeholder="Nhập số điện thoại">
+						<p id="msg" style="color: red;"></p>
+					</div>
+
+					<div class="form-labels">
+						<label class="form-label total-title" for="form3Example1q">Tổng Tiền:</label>
+						<br>
+						<label id="total-pay">[[${total}]] $</label>
+					</div>
+					<input type="hidden" th:value="${brand.getProduct().getId()}" name="id">
+					<input type="hidden" th:value="${size}" name="size">
+					<div class="form-labels">
+						<label class="form-label content-tksu" for="form3Example1q">Xin chân thành cảm ơn !</label>
+					</div>
+					<div class="row">
+						<div class="btn-cancel">
+							<button class="cancel" style="background-color: mediumseagreen" type="submit">Buy</button>
+						</div>
+					</div>
+					<a class="home" href="/">home</a>
+				</form>
+			</div>
+		</div>
+		<script src="/js/buy.js"></script>
+
+	</section>
+	<!--CSS-->
+	<th:include th:fragment="stylesheets">
+		<link href="/css/buy.css" rel="stylesheet">
+	</th:include>
+</body>
+
+</html>

@@ -1,0 +1,44 @@
+@charset "ISO-8859-1";
+section {
+	width: 100%;
+	height: 600px;
+}
+
+.find-container {
+	width: 400px;
+	height: 30px;
+	margin-top: 10px
+}
+
+.home-href {
+	width: 100px;
+}
+
+.find-content {
+	width: 100%;
+}
+
+.find-content, .home-href {
+	padding: 0;
+}
+
+.contain {
+	height: 100%;
+	display: flex;
+  	align-items: center;
+  	justify-content: center;
+}
+
+.text-1 {
+	margin-left: 80px;
+	margin-bottom: 2px;
+}
+
+.text-2 {
+	font-weight: 400;
+	color: rgb(133, 133, 133);
+}
+
+.text-1, .text-2 {
+	font-size: 20px;
+}
