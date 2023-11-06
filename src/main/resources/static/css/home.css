@@ -1,0 +1,39 @@
+@charset "ISO-8859-1";
+.btn-details {
+	padding-left: 5px;
+	padding-right: 10px;
+}
+
+.mt-40 {
+	margin: 24px 20px 0 70px;
+}
+
+.footer {
+	width: 100%;
+}
+
+.color {
+	background-color: #242424;
+	padding: 20px;
+}
+
+footer a {
+  color: white;
+}
+
+footer p {
+  color: white;
+}
+
+.mua {
+	margin: 0 0 15px 15px;
+	 width: 70px;
+}
+
+.nav-paging {
+	margin-top: 10px;
+	margin-bottom: 20px;
+	display: flex;
+  	align-items: center;
+  	justify-content: center;
+}

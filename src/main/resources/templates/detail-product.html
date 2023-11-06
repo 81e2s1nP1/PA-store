@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<html>
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Detail Product</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<th:replace="~{::content}">
+		</th:replace>
+</head>
+
+<body>
+	<section>
+		<div class="container mt-4">
+			<div style="display: block;">
+				<div class="row title-detail-prdct">
+					<p class="title-product">
+						<span><a id="brand-name"
+								th:href="'/brand?brandname=' + ${brand.getBrand_name()}">[[${brand.Brand_name}]]</a></span>
+						<span id="space">/</span>
+						<span class="product-name">[[${brand.product.ten_san_pham}]]</span>
+					</p>
+				</div>
+			</div>
+			<div class="row">
+				<!--slider container -->
+					<div id="carouselExampleControls" class="carousel slide slider-container" data-bs-ride="carousel">
+						<div class="carousel-inner">
+						<th:block th:each="Img : ${Imgs}">
+							<div class="carousel-item active">
+								<img th:src="${Img.getPic()}" class="d-block w-100" alt="...">
+							</div>
+						</th:block>		
+						</div>
+						
+						<button class="carousel-control-prev prev-button" type="button"
+							data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Previous</span>
+						</button>
+
+						<button class="carousel-control-next next-button" type="button"
+							data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+							<span class="carousel-control-next-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Next</span>
+						</button>
+					</div>
+
+				<!--infor container -->
+				<div class="content-container">
+					<div class="col-lg-3">
+						<div class="content">
+							<form action="user/buy" method="post">
+								<div class="empty"></div>
+								<div class="cotainer-size">
+									<span class="title-label">Size :</span>
+									<select class="select list-size" name="size">
+										<th:block th:each="size : ${sizes}">
+											<option th:value="${size.getSize_ao()}">[[${size.getSize_ao()}]]
+											</option>
+										</th:block>
+									</select>
+								</div>
+								<!-- mô tả sản phẩm -->
+								<div class="cotainer-brand">
+									<span class="title-label">Số lượng:</span><span>[[${brand.product.soluong}]]</span>
+								</div>
+								<div class="cotainer-brand">
+									<span class="title-label">Brand:</span><span>[[${brand.Brand_name}]]</span>
+								</div>
+								<div class="cotainer-brand">
+									<span class="title-label">Product name:</span><span class="pr-details">Tee
+										[[${brand.Brand_name}]] [[${brand.product.ten_san_pham}]]</span>
+								</div>
+								<div class="cotainer-size">
+									<span class="title-label">Description :</span>
+									<p class="description">
+										[[${brand.product.mota}]].
+									</p>
+								</div>
+								<div class="cotainer-size">
+									<span class="title-label">Price: </span><span>[[${brand.product.giaban}]]
+										$</span>
+								</div>
+								<input type="hidden" th:value="${brand.product.id}" name="product_id">
+								<div>
+									<button class="btn-buy" type="submit"
+										style="margin: 0 0 5px 15px; width: 70px;">Buy</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- sản phẩm liên quan -->
+			<div class="cotain-product-rel">
+				<div class="product-rel">
+					<p class="title-product-rel">sản phẩm liên quan</p>
+				</div>
+			</div>
+		</div>
+		<!-- Footer -->
+		<footer class="color">
+			<ul class="nav justify-content-center border-bottom pb-3 mb-3 container footer">
+				<li class="nav-item"><a href="/" class="nav-link px-2 text-muted">Trag chủ</a></li>
+				<li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Quy định giao hàng</a></li>
+				<li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Quy định trả hàng</a></li>
+				<li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Liên hệ</a></li>
+				<li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Blogs</a></li>
+				<th:block th:each="brand: ${brands}">
+					<li class="nav-item"><a th:href="'/brand?brandname=' + ${brand}" class="nav-link px-2 text-muted"
+							th:text="${brand}"></a></li>
+				</th:block>
+			</ul>
+			<p class="text-center text-muted">© 2023 PA.vn, Inc</p>
+		</footer>
+		<!-- End footer -->
+
+		<!--CSS-->
+		<th:include th:fragment="stylesheets">
+			<link href="/css/detail.css" rel="stylesheet">
+		</th:include>
+
+		<script src="/js/detail.js"></script>
+
+	</section>
+</body>
+
+</html>
