@@ -8,26 +8,8 @@
 	margin: 24px 20px 0 70px;
 }
 
-.footer {
-	width: 100%;
-}
-
-.color {
-	background-color: #242424;
-	padding: 20px;
-}
-
-footer a {
-  color: white;
-}
-
-footer p {
-  color: white;
-}
-
-.mua {
+.btn-container {
 	margin: 0 0 15px 15px;
-	 width: 70px;
 }
 
 .nav-paging {
@@ -37,3 +19,44 @@ footer p {
   	align-items: center;
   	justify-content: center;
 }
+
+.contain {
+	display: flex;
+	justify-content: center;
+	padding: 200px 200px 200px 100px;
+}
+
+.text-1 {
+	margin-left: 50px;
+	margin-bottom: 2px;
+}
+
+.text-2 {
+	font-weight: 400;
+	color: rgb(133, 133, 133);
+}
+
+.text-1, .text-2 {
+	font-size: 20px;
+}
+
+.find-container {
+	width: 100%;
+}
+
+.container-product {
+	width: 100%;
+}
+
+.carousel-inner .carousel-item {
+            transition: opacity 1s ease-in-out;
+        }
+        
+.card-img-top:hover {
+	transition: transform 0.2s;
+	 transform: scale(1.1);
+}
+
+.card-body a{
+	color: black;
+}        

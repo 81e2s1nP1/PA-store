@@ -1,67 +1,185 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
-<html>
 
 <head>
 	<meta charset="ISO-8859-1">
-	<title>Search Product</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<title>PA-Store</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+		integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+		crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
+		integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz"
+		crossorigin="anonymous"></script>
 	<th:replace="~{::content}">
 		</th:replace>
 </head>
 
 <body>
 	<section>
-		<div th:if="${products.isEmpty()}" class="contain">
-			<div>	
-				<p class="text-1">No results found</p>
-				<p class="text-2">Try different or more general keywords</p>
-			</div>	
-		</div>
-		<div th:if="${!products.isEmpty()}">
-			<div class="col-lg-9 container">
-				<div class="find-container">
-					<p class="find-content"><i class="fa-solid fa-shirt"></i> Kết quả tìm kiếm "[[${find}]]"</p>
+		<!-- Page content -->
+		<div class="container mt-40">
+			<div class="row">
+				<!-- Menu left -->
+				<div class="col-lg-3">
+					<div class="list-group ">
+						<a th:each="brand : ${brands}" class="list-group-item list-group-item-action"
+							th:href="'/brand?brandname=' + ${brand}" th:text="${brand}">
+						</a>
+					</div>
 				</div>
-				<div class="row">
-					<th:block th:each="sanPham : ${products}">
-						<div class="col-lg-4 col-md-6 mb-4">
-							<div class="card h-100 ">
-								<a th:href="'/detail-product?id=' + ${sanPham.getP().getId()}"><img class="card-img-top"
-										th:src="${sanPham.getPic()}" alt=""></a>
-								<div class="card-body">
-									<p class="card-title product-name">
-										<a th:href="'/detail-product?id=' + ${sanPham.getP().getId()}"
-											th:text="${sanPham.getP().getTen_san_pham()}">
-										</a>
-									</p>
-									<h5 th:text="${sanPham.getP().getGiaban()} + ' $'">
-									</h5>
-									<p class="card-text" th:text="${sanPham.getP().getMota()}">
-									</p>
-									<p class="card-text">
-										số lượng: <span class="card-text"
-											th:text="${sanPham.getP().getSoluong()}"></span>
-									</p>
-								</div>
-								<div>
-									<button type="submit" style="margin: 0 0 5px 15px; width: 70px;">Buy</button>
-								</div>
-								<div class="card-footer">
-									<small class="text-muted">&#9733; &#9733; &#9733;
-										&#9733; &#9734;</small>
-								</div>
+				<!-- End Menu left -->
+				<!-- Slider and Products -->
+				<div class="col-lg-9">
+					<!-- Slider -->
+					<div id="carouselExampleIndicators" class="carousel slide mb-4" data-bs-ride="true">
+						<div class="carousel-indicators">
+							<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
+								class="active" aria-current="true" aria-label="Slide 1"></button>
+							<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+								aria-label="Slide 2"></button>
+							<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+								aria-label="Slide 3"></button>
+						</div>
+						<div class="carousel-inner">
+							<div class="carousel-item active">
+								<img src="img/slider/3%20.png" class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="img/slider/2%20.png" class="d-block w-100" alt="...">
 							</div>
 						</div>
-					</th:block>
-				</div>
-			</div>
-		</div>
+						<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+							data-bs-slide="prev">
+							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Previous</span>
+						</button>
+						<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+							data-bs-slide="next">
+							<span class="carousel-control-next-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Next</span>
+						</button>
+					</div>
+					<!-- End Slider -->
+					<div th:if="${products.isEmpty()}" class="contain">
+						<div>
+							<p class="text-1">No results found for "[[${find}]]"</p>
+							<p class="text-2">Try different or more general keywords</p>
+						</div>
+					</div>
+					<div th:if="${!products.isEmpty()}">
+						<div class="container">
+							<div class="find-container">
+								<p class="find-content"><i class="fa-solid fa-shirt"></i> Search results for
+									"[[${find}]]"</p>
+							</div>
+							<div class="row container-product">
+								<th:block th:each="sanPham : ${products}">
+									<div class="col-lg-4 col-md-6 mb-4">
+										<div class="card h-100 ">
+											<a th:href="'/detail-product?id=' + ${sanPham.getP().getId()}"><img
+													class="card-img-top" th:src="${sanPham.getPic()}" alt=""></a>
+											<div class="card-body">
+												<p class="card-title product-name">
+													<a th:href="'/detail-product?id=' + ${sanPham.getP().getId()}"
+														th:text="${sanPham.getP().getTen_san_pham()}">
+													</a>
+												</p>
+												<h5 th:text="${sanPham.getP().getGiaban()} + ' $'">
+												</h5>
+												<p class="card-text" th:text="${sanPham.getP().getMota()}">
+												</p>
+												<th:block th:if="${sanPham.getP().getSoluong() > 0}">
+													<p class="card-text">
+														Number-of: <span class="card-text"
+															th:text="${sanPham.getP().getSoluong()}"></span>
+													</p>
+												</th:block>
+												<th:block th:if="${sanPham.getP().getSoluong() == 0}">
+													<p class="card-text" style="color: red;">
+														Out Of Stock </span>
+													</p>
+												</th:block>
+											</div>
+											<form action="detail-product" method="get">
+												<div class="btn-container">
+													<input type="hidden" th:value="${sanPham.getP().getId()}" name="id">
+													<input type="submit" value="Buy" class="btn btn-success mua">
+													<th:block th:if="${user != null}">
+														<th:block th:if="${user.getRoles() == 'ROLE_ADMIN'}">
+															<input type="button" value="Edit"
+																class="btn btn-secondary btn-edit"
+																th:data-id="${sanPham.getP().getId()}">
+														</th:block>
+													</th:block>
+												</div>
+											</form>
+											<div class="card-footer">
+												<small class="text-muted">&#9733; &#9733; &#9733;
+													&#9733; &#9734;</small>
+											</div>
+										</div>
+									</div>
+								</th:block>
+							</div>
+							<!-- Products -->
 
-		<th:include th:fragment="stylesheets">
-			<link rel="stylesheet" href="/css/find-product.css">
-		</th:include>
+							<!-- nav skip -->
+							<div class="nav-paging">
+								<nav aria-label="Page navigation example">
+									<ul class="pagination">
+										<li class="page-item">
+											<a class="page-link" th:href="'/find-product?p=0&name=' + ${find}">First</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link"
+												th:href="'/find-product?p=' + ${current - 9 > 0 ? current - 9 : 0} + '&name=' + ${find}">
+												<i class="fa-solid fa-arrow-left"></i>
+											</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link"
+												th:href="'/find-product?p=' + ${current + 9 > last + 2 ? last : current + 9} + '&name=' + ${find}">
+												<i class="fa-solid fa-arrow-right"></i>
+											</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link"
+												th:href="'/find-product?p=' + ${last} + '&name=' + ${find}">Last</a>
+										</li>
+									</ul>
+								</nav>
+							</div>
+
+							<!--end nav skip -->
+							<!-- End Products -->
+						</div>
+						<!-- End Slider and Products -->
+					</div>
+				</div>
+				<!-- End Page content -->
+
+				<th:include th:fragment="stylesheets">
+					<link rel="stylesheet" href="/css/home.css">
+				</th:include>
+
+				<script>
+					document.addEventListener("DOMContentLoaded", function () {
+						var btnEdits = document.querySelectorAll('.btn-edit');
+
+						if (btnEdits) {
+							btnEdits.forEach(function (btnEdit) {
+								btnEdit.addEventListener("click", function () {
+									let productId = btnEdit.getAttribute('data-id');
+									console.log(productId)
+									window.location.href = "/admin/about-product?id=" + productId;
+								});
+							});
+						}
+					});
+				</script>
 	</section>
 </body>
 

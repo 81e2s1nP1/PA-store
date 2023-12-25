@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<html>
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Update Product</title>
+	<link rel="icon" type="image/png" href="https://cdn2.iconfinder.com/data/icons/online-shopping-flat-round/550/store-1024.png">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+
+<body>
+	<section>
+		<div class="container">
+			<div class="contain-infor">
+				<div class="text-center">
+					<h3 style="color: rgb(95, 95, 95);">Update Product</h3>
+					<div th:if="${message != null}" class="alert alert-success text-center	">
+						[[${message}]]
+					</div>
+					<div th:if="${error != null}" class="alert alert-danger text-center	">
+						[[${error}]]
+					</div>
+				</div>
+				<hr class="separator-line">
+				<div class="infor">
+					<div class="form-outline mb-4">
+						<form action="update-product" method="post">
+							<input type="hidden" name="id" th:value="${product.getId()}" />
+							<label class="form-label" for="form3Example1q">Product Name</label>
+							<input type="text" id="form3Example1q" class="form-control" name="ten_san_pham"
+								th:value="${product.getTen_san_pham()}" />
+
+							<div class="form-outline mb-4">
+								<label class="form-label" for="form3Example1q">Product Price</label>
+								<input type="text" id="form3Example1q" class="form-control" name="giaban"
+									th:value="${product.getGiaban()}" />
+							</div>
+							
+							<div class="form-outline mb-4">
+								<label class="form-label" for="form3Example1q">Product sale</label>
+								<input type="text" id="form3Example1q" class="form-control" name="sale" placeholder="Enter the sale percentage "
+									th:value="${product.getSale()}" />
+							</div>
+
+							<div class="form-outline mb-4">
+								<label class="form-label" for="form3Example1q">Product Description</label>
+								<input type="text" id="form3Example1q" class="form-control" name="mota"
+									th:value="${product.getMota()}" />
+							</div>
+							
+							<div class="form-outline mb-4">
+								<label class="form-label" for="form3Example1q">Product Quantity</label>
+								<input type="text" id="form3Example1q" class="form-control" name="soluong"
+									th:value="${product.getSoluong()}" />
+							</div>
+
+							<button type="submit" class="btn btn-success">Save</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<th:include th:fragment="stylesheets">
+			<link rel="stylesheet" href="/css/about.css">
+		</th:include>
+	</section>
+
+</body>
+</html>

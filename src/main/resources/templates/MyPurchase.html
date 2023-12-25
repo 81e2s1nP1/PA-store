@@ -11,34 +11,99 @@
 
 <body>
 	<section>
-		<div class="text-center">
-			<table class="table">
-				<thead>
-					<tr>
-						<th scope="col">id</th>
-						<th scope="col">Product</th>
-						<th scope="col">Size</th>
-						<th scope="col">Order date</th>
-						<th scope="col">Total</th>
-						<th scope="col">Edit</th>
-					</tr>
-				</thead>
-				<tbody>
-					<th:block th:each="order : ${orders}">
+		<div class="container-fluid">
+			<div class="text-center">
+				<br>
+				<h2>My Ordered</h2>
+				<hr class="separator-line">
+				<br>
+				<table class="table table-bordered table-striped table-hover table-responsive-xl">
+					<thead class="thead-dark">
 						<tr>
-							<th scope="row">[[${order.id}]]</th>
-							<td>[[${order.Product.ten_san_pham}]]</td>
-							<td>[[${order.size}]]</td>
-							<td>[[${order.ngaydat}]]</td>
-							<td>[[${order.tong_tien}]] $</td>
-							<td><a href="#" class="btn btn-primary">Edit</a>
-								<a href="#" class="btn  btn-danger">Delete</a>
-							</td>
+							<th scope="col">id</th>
+							<th scope="col">Product</th>
+							<th scope="col">Image Product</th>
+							<th scope="col">Size</th>
+							<th scope="col">Order date</th>
+							<th scope="col">Total</th>
+							<th scope="col">Edit</th>
 						</tr>
-					</th:block>
-				</tbody>
-			</table>
-		</div>
+					</thead>
+					<tbody>
+						<th:block th:each="order : ${orders}">
+							<tr>
+								<th scope="row">[[${order.id}]]</th>
+								<td>[[${order.Product.ten_san_pham}]]</td>
+								<td><img class="img-order" th:src="${order.img.pic}" alt="Image"></td>
+								<td>[[${order.size}]]</td>
+								<td>[[${order.ngaydat}]]</td>
+								<td>[[${order.tong_tien}]] $</td>
+								<td>
+									<a th:href="@{/edit-order(id=${order.id})}" class="btn btn-primary">Edit</a>
+									<a href="#" class="btn  btn-danger">Delete</a>
+								</td>
+							</tr>
+						</th:block>
+					</tbody>
+				</table>
+				<div class="contain-btn">
+					<button class="btn-viewback" th:data-id="${currentPage}">Back <i
+							class="fa-solid fa-angle-up"></i></button>
+					<button class="btn-viewmore" th:data-id="${currentPage}">More <i
+							class="fa-solid fa-angle-down"></i></button>
+				</div>
+			</div>
+
+			<div class="cotain-product-rel">
+				<div class="product-rel">
+					<p class="suggest-label">YOU MAY ALSO LIKE</p>
+					<div class="image-container">
+						<div class="card h-100" th:each="top4BestSeller : ${top4BestSeller}">
+							<a th:href="'/detail-product?id=' + ${top4BestSeller.getP().getId()}">
+								<img class="card-img-top" th:src="${top4BestSeller.getPic()}" alt="">
+							</a>
+							<p style="font-size: 100%; word-wrap: break-word; white-space: normal;" class="card-title">
+								<a th:href="'/detail-product?id=' + ${top4BestSeller.getP().getId()}"
+									th:text="${top4BestSeller.getP().getTen_san_pham()}">
+								</a>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+			<th:include th:fragment="stylesheets">
+				<link rel="stylesheet" href="/css/allpurchase.css">
+			</th:include>
+
+			<script th:inline="javascript">
+				document.addEventListener("DOMContentLoaded", function () {
+					var btnViewMore = document.querySelectorAll('.btn-viewmore');
+					var btnViewBack = document.querySelectorAll('.btn-viewback');
+
+					if (btnViewMore) {
+						btnViewMore.forEach(function (btnEdit) {
+							btnEdit.addEventListener("click", function () {
+								let currentPage = btnEdit.getAttribute('data-id');
+								currentPage = (currentPage * 1) + 5;
+								window.location.href = "/user/purchase?page=" + currentPage;
+							});
+						});
+					}
+					if (btnViewBack) {
+						btnViewBack.forEach(function (btnEdit) {
+							btnEdit.addEventListener("click", function () {
+								let currentPage = btnEdit.getAttribute('data-id');
+								currentPage = (currentPage * 1) - 5;
+								window.location.href = "/user/purchase?page=" + currentPage;
+							});
+						});
+					}
+
+				});
+			</script>
 	</section>
 </body>
 

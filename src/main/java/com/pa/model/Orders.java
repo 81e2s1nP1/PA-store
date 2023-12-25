@@ -1,11 +1,13 @@
 package com.pa.model;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
@@ -23,8 +25,9 @@ public class Orders {
 	private Date ngaydat;
 	@NotNull
 	private int tong_tien;
-	@OneToOne
-	private Product product;
+	@ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 	@ManyToOne 
 	private User user;
 	@NotNull
@@ -33,6 +36,8 @@ public class Orders {
 	private String sdt;
 	@NotNull
 	private String address;
+	@OneToOne
+	private Img img;
 	public int getId() {
 		return id;
 	}
@@ -80,6 +85,12 @@ public class Orders {
 	}
 	public void setAddress(String address) {
 		this.address = address;
+	}
+	public Img getImg() {
+		return img;
+	}
+	public void setImg(Img img) {
+		this.img = img;
 	}
 	@Override
 	public String toString() {

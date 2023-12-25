@@ -1,5 +1,6 @@
 const phone = document.querySelector(".sdt");	
 const address = document.querySelector(".address");
+const btnCancel = document.getElementById("btn-cancel");
 
 const regex = /^(0|\+84)(\d{9,10})$/;
 
@@ -32,3 +33,12 @@ let eventKeyup_address = () => {
 
 address.addEventListener('keyup', eventKeyup_address);
 phone.addEventListener('keyup', eventKeyup);
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (btnCancel) {
+        btnCancel.addEventListener("click", function () {
+            window.location.href = "/";
+        });
+    }
+});

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<html>
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Update Order</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+
+<body>
+	<section>
+		<div class="container">
+			<div class="contain-infor">
+				<div class="text-center">
+					<h3 style="color: rgb(95, 95, 95);">Update Order</h3>
+					<div th:if="${message != null}" class="alert alert-success text-center	">
+						[[${message}]]
+					</div>
+				</div>
+				<hr class="separator-line">
+				<div class="infor">
+					<div class="form-outline mb-4">
+						<form action="handleEditOrder" method="post">
+							<input type="hidden" name="id" th:value="${order.getId()}" />
+
+							<div class="cotainer-size d-flex">
+								<span class="title-label">Size :</span>
+
+								<div class="checkbox-group">
+									<th:block th:each="size : ${sizes}">
+										<label style="margin-left: 10px;">
+											<input type="radio" class="checkbox list-size" name="size"
+												th:value="${size.getSize_ao()}" th:checked="${size.getSize_ao() == order.getSize()}">
+											[[${size.getSize_ao()}]]
+										</label>
+									</th:block>
+								</div>
+							</div>
+
+							<div class="form-outline mb-4" style="margin-top: 15px;">
+								<label class="form-label" for="form3Example1q">Delivery Location</label>
+								<input type="text" id="form3Example1q" class="form-control" name="address"
+									th:value="${order.getAddress()}" />
+							</div>
+
+							<div class="form-outline mb-4">
+								<label class="form-label" for="form3Example1q">Phone</label>
+								<input type="text" id="form3Example1q" class="form-control" name="sdt"
+									placeholder="Enter the sale percentage " th:value="${order.getSdt()}" />
+							</div>
+
+							<button type="submit" class="btn btn-success">Save</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Footer -->
+		<footer class="color">
+			<ul class="nav justify-content-center border-bottom pb-3 mb-3 container footer">
+				<li class="nav-item"><a href="/" class="nav-link px-2 text-muted">Home-Page</a></li>
+				<li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Delivery-Regulations</a></li>
+				<li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Return-Regulations</a></li>
+				<li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Contact</a></li>
+				<li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Blogs</a></li>
+				<th:block th:each="brand: ${brands}">
+					<li class="nav-item"><a th:href="'/brand?brandname=' + ${brand}" class="nav-link px-2 text-muted"
+							th:text="${brand}"></a></li>
+				</th:block>
+			</ul>
+			<p class="text-center text-muted">© 2023 PA.vn, Inc</p>
+		</footer>
+		<!-- End footer -->
+
+		<th:include th:fragment="stylesheets">
+			<link rel="stylesheet" href="/css/about.css">
+		</th:include>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			var checkboxes = document.querySelectorAll('.list-size');
+
+			checkboxes.forEach(function (checkbox) {
+				checkbox.addEventListener('change', function () {
+					checkboxes.forEach(function (otherCheckbox) {
+						if (otherCheckbox !== checkbox) {
+							otherCheckbox.checked = false;
+						}
+					});
+				});
+			});
+		});
+	</script>
+	</section>
+</body>
+
+</html>

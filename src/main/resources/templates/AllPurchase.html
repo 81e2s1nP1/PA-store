@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<html>
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>My Purchase</title>
+	<link rel="icon" type="image/png"
+		href="https://cdn2.iconfinder.com/data/icons/online-shopping-flat-round/550/store-1024.png">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+</head>
+
+<body>
+	<section>
+		<div class="container-fluid">
+			<div class="text-center">
+				<br>
+				<h2>Customers Orders</h2>
+				<div th:if="${message != null}" class="alert alert-success text-center	">
+					[[${message}]]
+				</div>
+				<hr class="separator-line">
+				<br>
+				<table class="table table-bordered table-striped table-hover table-responsive-xl">
+					<thead class="thead-dark">
+						<tr>
+							<th scope="col">Order ID</th>
+							<th scope="col">User ID</th>
+							<th scope="col">Product ID</th>
+							<th scope="col">Product Name</th>
+							<th scope="col">Image Product</th>							
+							<th scope="col">Product Size</th>
+							<th scope="col">Order Date</th>
+							<th scope="col">Delivery Location</th>
+							<th scope="col">Phone</th>
+							<th scope="col">Total Amount</th>
+							<th scope="col">Edit</th>
+						</tr>
+					</thead>
+					<tbody id="customerTableBody">
+						<th:block th:each="order : ${orders}">
+							<tr>
+								<th scope="row">[[${order.id}]]</th>
+								<td>[[${order.User.id}]]</td>
+								<td>[[${order.Product.id}]]</td>
+								<td>[[${order.Product.ten_san_pham}]]</td>
+								<td><img class="img-order" th:src="${order.img.pic}" alt="Image"></td>
+								<td>[[${order.size}]]</td>
+								<td>[[${order.ngaydat}]]</td>
+								<td>[[${order.address}]]</td>
+								<td>[[${order.sdt}]]</td>
+								<td>[[${order.tong_tien}]] $</td>
+								<td><a th:href="@{/edit-order(id=${order.id})}" class="btn btn-primary">Edit</a>
+									<a th:href="@{/admin/deleteOrder(id=${order.id})}"
+										class="btn  btn-danger">Delete</a>
+								</td>
+							</tr>
+						</th:block>
+					</tbody>
+				</table>
+				<div class="contain-btn">
+					<button class="btn-viewback" th:data-id="${currentPage}">Back  <i
+							class="fa-solid fa-angle-up"></i></button>
+					<button class="btn-viewmore" th:data-id="${currentPage}">More  <i
+							class="fa-solid fa-angle-down"></i></button>
+				</div>
+			</div>
+		</div>
+		
+		<div class="cotain-product-rel">
+				<div class="product-rel">
+					<p class="suggest-label">YOU MAY ALSO LIKE</p>
+					<div class="image-container">
+						<div class="card h-100" th:each="top4BestSeller : ${top4BestSeller}">
+							<a th:href="'/detail-product?id=' + ${top4BestSeller.getP().getId()}">
+								<img class="card-img-top" th:src="${top4BestSeller.getPic()}" alt="">
+							</a>
+							<p style="font-size: 100%; word-wrap: break-word; white-space: normal;" class="card-title">
+								<a th:href="'/detail-product?id=' + ${top4BestSeller.getP().getId()}"
+									th:text="${top4BestSeller.getP().getTen_san_pham()}">
+								</a>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		<th:include th:fragment="stylesheets">
+			<link rel="stylesheet" href="/css/allpurchase.css">
+		</th:include>
+
+		<script th:inline="javascript">
+			document.addEventListener("DOMContentLoaded", function () {
+				var btnViewMore = document.querySelectorAll('.btn-viewmore');
+				var btnViewBack = document.querySelectorAll('.btn-viewback');
+
+				if (btnViewMore) {
+					btnViewMore.forEach(function (btnEdit) {
+						btnEdit.addEventListener("click", function () {
+							let currentPage = btnEdit.getAttribute('data-id');
+							currentPage = (currentPage * 1) + 5;
+							window.location.href = "/admin/customer-orders?page=" + currentPage;
+						});
+					});
+				}
+				if (btnViewBack) {
+					btnViewBack.forEach(function (btnEdit) {
+						btnEdit.addEventListener("click", function () {
+							let currentPage = btnEdit.getAttribute('data-id');
+							currentPage = (currentPage * 1) - 5;
+							window.location.href = "/admin/customer-orders?page=" + currentPage;
+						});
+					});
+				}
+
+			});
+		</script>
+	</section>
+</body>
+
+</html>

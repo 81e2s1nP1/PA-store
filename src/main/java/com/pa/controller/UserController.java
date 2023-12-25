@@ -1,8 +1,10 @@
 package com.pa.controller;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.pa.model.Account;
 import com.pa.model.Brand;
@@ -20,6 +23,7 @@ import com.pa.model.Orders;
 import com.pa.model.Product;
 import com.pa.model.Size;
 import com.pa.repository.Accout_Repository;
+import com.pa.repository.ImgRepository;
 import com.pa.service.BrandDao;
 import com.pa.service.ImgDao;
 import com.pa.service.OrdersDao;
@@ -46,6 +50,9 @@ public class UserController {
 
 	@Autowired
 	private OrdersDao ordersDao;
+	
+	@Autowired
+	private ImgRepository imgRepository;
 
 	@ModelAttribute
 	public void commonUser(Principal p, Model m) {
@@ -72,11 +79,18 @@ public class UserController {
 		m.addAttribute("brand", brand);
 		m.addAttribute("sizes", sizes);
 		m.addAttribute("img", img);
+		List<String> brands = brandDao.getAllBrandName();
+		m.addAttribute("brands", brands);
+		
+		List<Product> top4BestSeller = ordersDao.findTop4Ordered();
+		List<Img> imgTop4BestSeller = new ArrayList<Img>();
+		top4BestSeller.forEach(product -> imgTop4BestSeller.add(imgRepository.getByproduct_id(product).get(0)));
+		m.addAttribute("top4BestSeller", imgTop4BestSeller);
 		return "create-order";
 	}
 
 	@PostMapping(path = "/buyed")
-	public String buyed(@ModelAttribute Orders orders, Principal p, @RequestParam("id") int id, Model m) {
+	public String buyed(@ModelAttribute Orders orders, Principal p, @RequestParam("id") int id, Model m, RedirectAttributes redirectAttributes) {
 		//thay thế tất cả dấu , có trong chỗi size thành rỗng
 		orders.setSize(orders.getSize().replaceAll(",", ""));
 		Product product = productDao.findByid(id); 
@@ -84,9 +98,13 @@ public class UserController {
 		//nếu size và product khác yêu cầu có trong csdl
 		if (product != null && size != null) {
 			if (size.getSoLuongSize() <= 0) {
-				m.addAttribute("msg", "Size bạn chọn tạm hết vui lòng chọn size khác");
+				redirectAttributes.addFlashAttribute("message", "The size you selected is temporarily out of stock, please choose another size");
 				return "redirect:/detail-product?id="+id;
-			} else {
+			} else if (product.getSoluong() <= 0) {
+				redirectAttributes.addFlashAttribute("message", "Product is currently out of stock");
+				return "redirect:/detail-product?id="+id;
+			} 
+			else {
 				String email = p.getName();
 				Account account = accout_Repository.findByEmail(email);
 				orders.setProduct(product);
@@ -100,6 +118,7 @@ public class UserController {
 				size.setSoLuongSize(size.getSoLuongSize() - 1);
 				sizeDao.save(size);
 				productDao.save(product);
+				redirectAttributes.addFlashAttribute("message", "You have successfully ordered");
 			}
 		} else {
 			return "redirect:/error";
@@ -108,14 +127,46 @@ public class UserController {
 	}
 	
 	@GetMapping(path = "/purchase")
-	public String ordered(Principal p, Model m) {
-		if(p == null) {
-			return "redirect:/login";
-		}else {
-			Account account = accout_Repository.findByEmail(p.getName());
-			m.addAttribute("orders", ordersDao.getByMyPurchase(account.getUser()));
-			System.out.println(ordersDao.getByMyPurchase(account.getUser()));
-			return "MyPurchase";
-			}
-		}
+	public String ordered(Principal p, Model m, @RequestParam(defaultValue = "0") int page, RedirectAttributes redirectAttributes) {
+		Account user = accout_Repository.findByEmail(p.getName());
+		int pageSize = 5;
+
+	    if (page < 0) {
+	        page = 0;
+	    }
+
+	    List<Orders> orders = ordersDao.getOrdersByPage(page, pageSize, user.getUser());
+
+	    if (orders.isEmpty() && page > 0) {
+	        page = Math.max(0, page - 5);
+	        return "redirect:/user/purchase?page=" + page;
+	    } else if (orders.isEmpty()) {
+	        redirectAttributes.addFlashAttribute("message", "chưa có sản phẩm nào");
+	        return "MyPurchase";
+	    }
+	    
+	    for(Orders order: orders) {
+	    	order.setImg(imgRepository.getByproduct_id(order.getProduct()).get(0));
+	    }
+	    
+	    
+	    // Top 4 Best Seller
+	    List<Product> top8BestSeller = productDao.getRandom8Product();
+	    List<Img> imgTop8BestSeller = top8BestSeller.stream()
+	            .map(product -> imgRepository.getByproduct_id(product).get(0))
+	            .collect(Collectors.toList());
+
+	    // Other Attributes
+	    m.addAttribute("top4BestSeller", imgTop8BestSeller);
+
+	    List<String> brands = brandDao.getAllBrandName();    
+	    m.addAttribute("brands", brands);
+	    m.addAttribute("orders", orders);
+	    m.addAttribute("currentPage", page);
+
+	    return "MyPurchase";
+	}
+
+
+
 }

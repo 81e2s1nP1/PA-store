@@ -1,0 +1,26 @@
+.container {
+	padding-top: 50px;
+	padding-bottom: 100px;
+}
+
+.contain-infor {
+	border: 1PX solid;
+	border-color: #333;
+	padding: 50px;
+	width:  50%;
+	align-items: center;
+	margin-left: 350px;
+}
+
+.contain-title {
+	align-items: center;
+}
+
+.mg-user { 
+	width: 30px;
+	height: 30px;	
+}
+
+.col-md-6 {
+	margin-top: 10px;
+}

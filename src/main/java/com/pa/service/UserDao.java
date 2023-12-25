@@ -65,9 +65,6 @@ public class UserDao {
 
 			content = content.replace("[[name]]", user.getUsername());
 			String siteUrl = url + "/verify?code=" + user.getVerification();
-
-			System.out.println(siteUrl);
-
 			content = content.replace("[[URL]]", siteUrl);
 
 			helper.setText(content, true);
@@ -81,17 +78,12 @@ public class UserDao {
 	}
 
 	public boolean verifyAccount(String verificationCode) {
-		System.out.println("code" + verificationCode);
 		User user = userRepository.findByVerification(verificationCode);
-		System.out.println("user" + user);
 		if (user == null) {
 			return false;
 		} else {
 			user.setEnable(true);
-			System.out.println(user.isEnable());
 			user.setVerification(null);
-			System.out.println(user.getVerification());
-			System.out.println(user);
 			userRepository.save(user);
 			return true;
 			}

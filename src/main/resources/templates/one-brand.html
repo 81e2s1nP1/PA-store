@@ -42,14 +42,29 @@
 										</h5>
 										<p class="card-text" th:text="${sanPham.getP().getMota()}">
 										</p>
+										<th:block th:if="${sanPham.getP().getSoluong() > 0}">
 										<p class="card-text">
-											số lượng: <span class="card-text"
+											Number-of: <span class="card-text"
 												th:text="${sanPham.getP().getSoluong()}"></span>
 										</p>
+										</th:block>
+										<th:block th:if="${sanPham.getP().getSoluong() == 0}">
+										<p class="card-text" style="color: red;">
+											Out Of Stock </span>
+										</p>
+										</th:block>
 									</div>
-									<div>
-										<button type="submit" style="margin: 0 0 5px 15px; width: 70px;">Buy</button>
-									</div>
+									<form action="detail-product" method="get">
+										<div class="btn-container">
+											<input type="hidden" th:value="${sanPham.getP().getId()}" name="id">
+											<input type="submit" value="Buy" class="btn btn-success">
+											<th:block th:if="${user != null}">
+												<th:block th:if="${user.getRoles() == 'ROLE_ADMIN'}">
+													<input type="button" value="Edit" class="btn btn-secondary btn-edit" th:data-id="${sanPham.getP().getId()}">
+												</th:block>
+											</th:block>
+										</div>
+									</form>
 									<div class="card-footer">
 										<small class="text-muted">&#9733; &#9733; &#9733;
 											&#9733; &#9734;</small>
@@ -65,7 +80,35 @@
 			</div>
 			<!-- End Slider and Products -->
 		</div>
-		</div>
+		
+		<!-- nav skip -->
+							<div class="nav-paging">
+								<nav aria-label="Page navigation example">
+									<ul class="pagination">
+										<li class="page-item"><a class="page-link"
+												th:href="'/brand?p=0&brandname=' + ${name}">First</a></li>
+										<li class="page-item">
+											<a class="page-link"
+												th:href="'/brand?p='+${current - 6 > 0 ? current - 6 : 0} + '&brandname=' + ${name}">
+												<i class="fa-solid fa-arrow-left"></i>
+											</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link"
+												th:href="'/brand?p='+${current + 6 > last + 2 ? last : current + 6} + '&brandname=' + ${name}">
+												<i class="fa-solid fa-arrow-right"></i>
+											</a>
+										</li>
+										<li class="page-item"><a class="page-link"
+												th:href="'/brand?p=' + ${last} + '&brandname=' + ${name}">Last</a>
+										</li>
+									</ul>
+								</nav>
+							</div>
+		
+		<th:include th:fragment="stylesheets">
+			<link rel="stylesheet" href="/css/oneBrand.css">
+		</th:include>
 	</section>
 </body>
 

@@ -8,33 +8,41 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.pa.model.Account;
 import com.pa.model.Brand;
 import com.pa.model.Img;
+import com.pa.model.Orders;
+import com.pa.model.Product;
 import com.pa.model.Size;
 import com.pa.model.User;
 import com.pa.repository.Accout_Repository;
+import com.pa.repository.ImgRepository;
+import com.pa.repository.OrdersRepository;
+import com.pa.repository.SizeRepository;
 import com.pa.repository.UserRepository;
 import com.pa.service.AccountDao;
 import com.pa.service.BrandDao;
 import com.pa.service.ImgDao;
+import com.pa.service.OrdersDao;
 import com.pa.service.ProductDao;
 import com.pa.service.SizeDao;
 import com.pa.service.UserDao;
@@ -49,6 +57,9 @@ public class HomeController {
 
 	@Autowired
 	private ProductDao productDao;
+	
+	@Autowired
+	private OrdersDao ordersDao;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -57,6 +68,12 @@ public class HomeController {
 	private Accout_Repository accout_Repository;
 
 	@Autowired
+	private OrdersRepository ordersRepository;
+	
+	@Autowired
+	private SizeRepository sizeRepository;
+	
+	@Autowired
 	private BrandDao brandDao;
 
 	@Autowired
@@ -64,6 +81,12 @@ public class HomeController {
 
 	@Autowired
 	private ImgDao imgDao;
+	
+	@Autowired
+	private ImgRepository imgRepository;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 
 	@GetMapping(path = "/")
 	public String home(Model m, @RequestParam("p") Optional<Integer> p) {
@@ -80,10 +103,9 @@ public class HomeController {
 		}
 		p = Optional.ofNullable(p.orElse(0));
 		List<Img> subarray = PagingCustom(new_imgs, p, p.flatMap(i -> Optional.of(i + 9)));
-
 		m.addAttribute("products", subarray);
 		m.addAttribute("current", p.get());
-		m.addAttribute("last", new_imgs.size() - 2);
+		m.addAttribute("last", new_imgs.size() - 9);
 		List<String> brands = brandDao.getAllBrandName();
 		m.addAttribute("brands", brands);
 		return "index";
@@ -127,52 +149,90 @@ public class HomeController {
 	public String reset_password() {
 		return "reset-password";
 	}
+	
+	@GetMapping(path = "/reset-password-email")
+	public String reset_password_email() {
+		return "YourEmail";
+	}
+	
+	@PostMapping(path = "/handle-email") 
+	public String sendEmail(@RequestParam("email") String email,
+			RedirectAttributes redirectAttributes, 
+			HttpServletRequest request) {
+		Account account = accout_Repository.findByEmail(email);
+		if(account == null) {
+			redirectAttributes.addFlashAttribute("error", "E-mail does not exist");
+			return "redirect:/reset-password-email";
+		}
+		String url = request.getRequestURL().toString();
+		url = url.replace(request.getServletPath(), "");
+		accountDao.sendEmail(account, url);
+		return "redirect:/login";
+	}
 
-//	@PostMapping(path = "/handle-reset-password")
-//	public ResponseEntity<Account> handle_reset_password(
-//				@RequestBody Account account, HttpSession session, HttpServletRequest request
-//			) {
-//		}
-//		
-//		
-//	}
+	@PostMapping(path = "/handle-reset-password")
+	public String ResetPassword(@RequestParam("password") String password,
+			@RequestParam("email") String email,
+			@RequestParam("confirm_password") String confirm_password,
+			RedirectAttributes redirectAttributes) {
+		Account account = accout_Repository.findByEmail(email);
+		if(account == null) {
+			redirectAttributes.addFlashAttribute("error", "E-mail does not exist");
+			return "redirect:/reset-password?email="+email;
+		}
+		if(!password.equals(confirm_password)) {
+			redirectAttributes.addFlashAttribute("error", "Password Incorrect");
+			return "redirect:/reset-password?email="+email;
+		}
+		account.setPassword(passwordEncoder.encode(confirm_password));
+		accout_Repository.save(account);
+		return "redirect:/login";
+	}
 
 	@GetMapping(path = "/detail-product")
-	public String detail_product(@RequestParam("id") int id, Model m) {
-		List<Size> sizes = sizeDao.findByProduct_id(productDao.findByid(id));
-		m.addAttribute("sizes", sizes);
+	public String detailProduct(@RequestParam("id") int id, Model m) {
+	    // Sizes
+	    List<Size> sizes = sizeDao.findByProduct_id(productDao.findByid(id));
+	    m.addAttribute("sizes", sizes);
 
-		Brand brand = brandDao.findById(id);
-		m.addAttribute("brand", brand);
+	    // Brand
+	    Brand brand = brandDao.findById(id);
+	    m.addAttribute("brand", brand);
 
-		List<Img> imgs = imgDao.getAll();
-		List<Img> new_imgs = new ArrayList<Img>();
+	    // Product Images
+	    List<Img> imgs = imgDao.getAll();
+	    List<Img> newImgs = new ArrayList<>();
 
-		for (int i = 0; i < imgs.size(); i++) {
-			boolean isExist = imgs.get(i).getP().getTen_san_pham().equals(brand.getProduct().getTen_san_pham());
-			if (i == 0) {
-				if (isExist) {
-					new_imgs.add(imgs.get(i));
-				} else {
-					++i;
-				}
-			} else {
-				if (isExist) {
-					new_imgs.add(imgs.get(i));
-				}
-			}
-		}
+	    String targetProductName = brand.getProduct().getTen_san_pham();
 
-		List<String> brands = brandDao.getAllBrandName();
-		m.addAttribute("brands", brands);
-		m.addAttribute("Imgs", new_imgs);
-		return "detail-product";
+	    for (int i = 0; i < imgs.size(); i++) {
+	        boolean isExist = imgs.get(i).getP().getTen_san_pham().equals(targetProductName);
+
+	        if ((i == 0 && isExist) || (i > 0 && isExist)) {
+	            newImgs.add(imgs.get(i));
+	        }
+	    }
+
+	    // Top 4 Best Seller
+	    List<Product> top4BestSeller = ordersDao.findTop4Ordered();
+	    List<Img> imgTop4BestSeller = top4BestSeller.stream()
+	            .map(product -> imgRepository.getByproduct_id(product).get(0))
+	            .collect(Collectors.toList());
+
+	    // Other Attributes
+	    List<String> brands = brandDao.getAllBrandName();
+	    m.addAttribute("top4BestSeller", imgTop4BestSeller);
+	    m.addAttribute("brands", brands);
+	    m.addAttribute("Imgs", newImgs);
+
+	    return "detail-product";
 	}
+
 
 	// xu ly tao tai khoan & thong tin nguoi dung
 	@PostMapping(path = "/register-account")
 	public String solving_resgister(@Valid @ModelAttribute Account account, @Valid @ModelAttribute User user,
-			@RequestParam("dateofbirth") String dob, HttpSession session, HttpServletRequest request) {
+			@RequestParam("dateofbirth") String dob, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
 		String url = request.getRequestURL().toString();
 		// System.out.println(url); http://localhost:8080/saveUser
@@ -193,11 +253,13 @@ public class HomeController {
 		user.setAccount(account);
 
 		// save user & account into db
-		if (userRepository.findByUsername(user.getUsername()) == null) {
+		if (userRepository.findByUsername(user.getUsername()) == null
+				&& accout_Repository.findByEmail(account.getEmail()) == null
+				) {
 			userDao.save(user, url);
 			accountDao.save(account);
 		} else {
-			session.setAttribute("msg", "Register fail");
+			redirectAttributes.addFlashAttribute("msg", "Username Or Email Existed");
 		}
 		return "redirect:create";
 	}
@@ -212,53 +274,74 @@ public class HomeController {
 		return "verified";
 	}
 
-	// Xử lý hiển thị các sản phẩm của một thương hiệu
 	@GetMapping(path = "/brand")
-	public String handle(@RequestParam("brandname") String brandname, Model m) {
-		List<String> tableBrands = brandDao.getAllBrandName();
-		m.addAttribute("table_brands", tableBrands);
+	public String handleBrand(
+	        @RequestParam("brandname") String brandname,
+	        Model m,
+	        @RequestParam("p") Optional<Integer> p
+	) {
+	    List<String> tableBrands = brandDao.getAllBrandName();
+	    m.addAttribute("table_brands", tableBrands);
 
-		// detail brand
-		List<Img> imgs = imgDao.getAll();
-		List<Img> new_imgs = new ArrayList<Img>();
+	    // detail brand
+	    List<Img> imgs = imgDao.getAll();
+	    List<Img> new_imgs = new ArrayList<>();
 
-		for (int i = 0; i < imgs.size(); i++) {
-			if (i == 0) {
-				if (imgs.get(i).getPic().contains(brandname)) {
-					new_imgs.add(imgs.get(i));
-				} else {
-					++i;
-				}
-			} else {
-				if (imgs.get(i).getP().getId() != imgs.get(i - 1).getP().getId()
-						&& imgs.get(i).getPic().contains(brandname)) {
-					new_imgs.add(imgs.get(i));
-				}
-			}
-		}
-		m.addAttribute("products", new_imgs);
-		m.addAttribute("name", brandname);
-		return "one-brand";
+	    for (int i = 0; i < imgs.size(); i++) {
+	        String orginalStr = imgs.get(i).getP().getTen_san_pham().toLowerCase();
+	        String subStrToCheck = brandname.toLowerCase();
+
+	        boolean isFirstImg = i == 0;
+	        boolean isNewBrand = (isFirstImg || (imgs.get(i).getP().getId() != imgs.get(i - 1).getP().getId()));
+	        boolean isBrandMatched = orginalStr.contains(subStrToCheck);
+
+	        if ((isFirstImg && isBrandMatched) || (isNewBrand && isBrandMatched)) {
+	            new_imgs.add(imgs.get(i));
+	        }
+	    }
+
+	    p = Optional.ofNullable(p.orElse(0));
+	    List<Img> subarray = PagingCustom(new_imgs, p, p.flatMap(i -> Optional.of(i + 9)));
+
+	    m.addAttribute("current", p.get());
+	    m.addAttribute("last", Math.max(0, new_imgs.size() - 9));
+
+	    List<String> brands = brandDao.getAllBrandName();
+	    m.addAttribute("brands", brands);
+	    m.addAttribute("products", subarray);
+	    m.addAttribute("name", brandname);
+	    return "one-brand";
 	}
 
-	@PostMapping(path = "/find-product")
-	public String find_product(@RequestParam("name") String name, Model m) {
-		List<Img> imgs = imgDao.findByProduct_idContain(name);
-		List<Img> new_imgs = new ArrayList<Img>();
 
-		for (int i = 0; i < imgs.size(); i++) {
-			if (i == 0) {
-				new_imgs.add(imgs.get(i));
-			} else {
-				if (imgs.get(i).getP().getId() != imgs.get(i - 1).getP().getId()) {
-					new_imgs.add(imgs.get(i));
-				}
-			}
-		}
-		m.addAttribute("find", name);
-		m.addAttribute("products", new_imgs);
-		return "find-product";
+	@GetMapping(path = "/find-product")
+	public String find_product(
+	        @RequestParam("name") String name,
+	        Model m,
+	        @RequestParam("p") Optional<Integer> p
+	) {
+	    List<Img> imgs = imgDao.findByProduct_idContain(name);
+	    List<Img> new_imgs = new ArrayList<>();
+
+	    for (int i = 0; i < imgs.size(); i++) {
+	        if (i == 0 || imgs.get(i).getP().getId() != imgs.get(i - 1).getP().getId()) {
+	            new_imgs.add(imgs.get(i));
+	        }
+	    }
+
+	    p = Optional.ofNullable(p.orElse(0));
+	    List<Img> subarray = PagingCustom(new_imgs, p, p.flatMap(i -> Optional.of(i + 9)));
+
+	    m.addAttribute("current", p.get());
+	    m.addAttribute("last", Math.max(0, new_imgs.size() - 9));
+	    List<String> brands = brandDao.getAllBrandName();
+	    m.addAttribute("brands", brands);
+	    m.addAttribute("find", name);
+	    m.addAttribute("products", subarray);
+
+	    return "find-product";
 	}
+
 
 	@GetMapping(path = "/about")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_USER')")
@@ -268,8 +351,65 @@ public class HomeController {
 		String formattedDate = dateFormat.format(account.getUser().getNgaysinh());
 		
 		m.addAttribute("dob", formattedDate);
-		m.addAttribute("user", account.getUser());
-		return "about";
+		m.addAttribute("about", account.getUser());
+		List<String> brands = brandDao.getAllBrandName();
+		m.addAttribute("brands", brands);
+		return "About";
+	}
+	
+	@PostMapping(path = "/update-about")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_USER')")
+	public String UpdateAbout(@ModelAttribute User user, @RequestParam("username") String username,
+            @RequestParam("address") String address,
+            @RequestParam("phone") String phone,
+            @RequestParam("dateofbirth") String dob,
+            @RequestParam("sex") String sex,
+            RedirectAttributes redirectAttributes
+			) {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+		Date date = null;
+		try {
+			date = (Date) formatter.parse(dob);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		user.setNgaysinh(date);
+		user.setAddress(address);
+		user.setPhone(phone);
+		user.setUsername(username);
+		user.setSex(sex);
+		User u = userRepository.save(user);
+		if(u != null) {
+			redirectAttributes.addFlashAttribute("message", "The user has been updated successfully.");
+		}else {
+			redirectAttributes.addFlashAttribute("message", "User update failed");
+		}
+		return "redirect:/about";
+	}
+	
+	@GetMapping(path = "/edit-order")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_USER')")
+	public String  EditOrder(@RequestParam("id") int id, Model m) {
+		Orders orders = ordersRepository.findById(id).get();
+		List<Size> sizes = sizeRepository.getByproduct_id(orders.getProduct());
+		List<String> brands = brandDao.getAllBrandName();
+		m.addAttribute("brands", brands);
+		m.addAttribute("order", orders);
+		m.addAttribute("sizes", sizes);
+		return "about-order";
+	}
+	
+	@PostMapping(path = "/handleEditOrder")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_USER')")
+	public String handleEditOrder(@ModelAttribute Orders order, @RequestParam("size") String size, RedirectAttributes redirectAttributes) {
+		Orders orders = ordersDao.updateOrder(order, order.getId());
+		if(orders != null) {
+			redirectAttributes.addFlashAttribute("message", "The user has been updated successfully.");
+			return "redirect:/edit-order?id="+ order.getId() ;
+		}else {
+			redirectAttributes.addFlashAttribute("message", "Order update failed");
+			return "redirect:/edit-order?id="+ order.getId() ;
+		}
 	}
 	
 	@GetMapping("/error")

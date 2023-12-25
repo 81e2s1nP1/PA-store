@@ -1,60 +1,73 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
 <html>
+
 <head>
-<meta charset="UTF-8">	
-<meta charset="ISO-8859-1">
-<title>thêm sản phẩm</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+	<meta charset="UTF-8">
+	<meta charset="ISO-8859-1">
+	<title>Add Product</title>
+	<link rel="icon" type="image/png" href="https://cdn2.iconfinder.com/data/icons/online-shopping-flat-round/550/store-1024.png">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
 		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
+
 <body>
 	<section>
 		<div class="container">
-		<h1 class="text-center" style="margin-top: 15px;">thêm sản phẩm</h1>
-		<form action="handle-save-product" method="post">
-			<div class="mb-3">
-				<label for="exampleInputEmail1" class="form-label">Tên sản phẩm</label>
-				<input type="text" class="form-control" name="ten_san_pham">
-			</div>
-			<div class="mb-3">
-				<label class="form-label">giá bán</label>
-				<input type="text" class="form-control" name="giaban">
-			</div>
-			
-			<div class="mb-3">
-				<label for="exampleInputEmail1" class="form-label">mô tả</label>
-				<input type="text" class="form-control"  name="mota">
-			</div>
-			<div class="mb-3">
-				<label for="exampleInputEmail1" class="form-label">đánh giá</label>
-				<input type="text" class="form-control" name="danhgia">
-			</div>
-			
-			<div class="mb-3">
-				<label for="text" class="form-label">Brand Name</label>
-				<input type="text" class="form-control" name="brandname">
-			</div>
-			
-			<div class="col-md-6 mb-4">
-				<label for="text" class="form-label">Size</label>
-                  <select class="select" name="size_ao">
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                    <option value="XXL">XXL</option>
-                  </select>
+			<form action="handle-save-product" method="post">
+				<div class="product-infor">
+					<h1 class="text-center" style="margin-top: 15px;">Add Product</h1>
+					<div th:if="${message != null}" class="alert alert-success text-center	">
+						[[${message}]]
+					</div>
+					<div th:if="${error != null}" class="alert alert-danger text-center	">
+						[[${error}]]
+					</div>
+					<hr class="separator-line">
+					<div class="mb-3">
+						<label for="exampleInputEmail1" class="form-label">Name Product</label>
+						<input type="text" class="form-control" name="ten_san_pham">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Price</label>
+						<input type="text" class="form-control" name="giaban">
+					</div>
 
-                </div>
-			
-			<div class="mb-3">
-				<label for="text" class="form-label">Số Lượng Size áo</label>
-				<input type="text" class="form-control" name="soLuongSize">
-			</div>
-			<button type="submit" class="btn btn-primary" style="margin-bottom: 30px;">Thêm</button>
-		</form>
+					<div class="mb-3">
+						<label for="exampleInputEmail1" class="form-label">Description</label>
+						<input type="text" class="form-control" name="mota">
+					</div>
+
+					<div class="mb-3">
+						<label for="text" class="form-label">Brand Name</label>
+						<input type="text" class="form-control" name="brandname">
+					</div>
+
+					<div class="col-md-6 mb-4">
+						<label for="text" class="form-label">Size</label>
+						<select class="select" name="size_ao">
+							<option value="S">S</option>
+							<option value="M">M</option>
+							<option value="L">L</option>
+							<option value="XL">XL</option>
+							<option value="XXL">XXL</option>
+						</select>
+
+					</div>
+
+					<div class="mb-3">
+						<label for="text" class="form-label">Number of sizes</label>
+						<input type="text" class="form-control" name="soLuongSize" placeholder="Enter number of sizes">
+					</div>
+					<button type="submit" class="btn btn-success" style="margin-bottom: 30px;">Save</button>
+				</div>
+			</form>
 		</div>
+
+		<th:include th:fragment="stylesheets">
+			<link rel="stylesheet" href="/css/addProduct.css">
+		</th:include>
 	</section>
 </body>
+
 </html>

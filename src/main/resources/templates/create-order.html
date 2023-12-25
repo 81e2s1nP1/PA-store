@@ -1,29 +1,31 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
 <html>
 
 <head>
 	<meta charset="ISO-8859-1">
 	<title>Create Order</title>
+	<link rel="icon" type="image/png"
+		href="https://cdn2.iconfinder.com/data/icons/online-shopping-flat-round/550/store-1024.png">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
 		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-	<th:replace="~{::content}">
-		</th:replace>
 </head>
 
 <body>
 	<section>
-		<div class="row margin-left">
+		<div class="container">
 			<div class="container-img">
 				<img th:src="${img.getPic()}" class="buy-img" alt="...">
 			</div>
 			<div class="container-infor">
 				<div class="container-title text-center">
-					<h3 class="">Xác nhận đơn hàng</h3>
+					<h3 class="">Order-Confirmation</h3>
+					<hr class="separator-line">
 				</div>
-				<form action="buyed" method="post">
+				<form action="buyed" method="post" id="purchaseForm">
 					<div class="cotainer-size">
-						<span class="title-label">Tee [[${brand.brand_name}]] [[${brand.product.ten_san_pham}]] , size</span>
+						<p class="title-label">Tee [[${brand.brand_name}]] [[${brand.product.ten_san_pham}]]</p>
+						<label>SIZE: </label>
 						<select class="select list-size" name="size">
 							<th:block th:each="size : ${sizes}">
 								<option th:value="${size.getSize_ao()}">[[${size.getSize_ao()}]]
@@ -33,42 +35,55 @@
 					</div>
 					<div class="form-labels">
 						<input type="text" id="form3Example1q" class="form-control address" name="address" required
-							placeholder="Nhập địa chỉ nhận hàng">
-						<p id="msg-address" style="color: red;"></p>
+							placeholder="Enter the shipping address">
+						<p id="msg-address" class="msg"></p>
 					</div>
 
 					<div class="form-labels">
 						<input type="text" id="form3Example1q" class="form-control sdt" name="sdt" required
-							placeholder="Nhập số điện thoại">
-						<p id="msg" style="color: red;"></p>
+							placeholder="Enter your phone number">
+						<p id="msg" class="msg"></p>
 					</div>
 
 					<div class="form-labels">
-						<label class="form-label total-title" for="form3Example1q">Tổng Tiền:</label>
+						<label class="form-label total-title" for="form3Example1q">The total amount is :</label>
 						<br>
 						<label id="total-pay">[[${total}]] $</label>
 					</div>
 					<input type="hidden" th:value="${brand.getProduct().getId()}" name="id">
 					<input type="hidden" th:value="${size}" name="size">
-					<div class="form-labels">
-						<label class="form-label content-tksu" for="form3Example1q">Xin chân thành cảm ơn !</label>
+					<div class="text-center">
+						<input type="submit" value="Buy" class="btn btn-success m-3">
+						<input type="button" value="Home" class="btn btn-secondary" id="btn-cancel">
 					</div>
-					<div class="row">
-						<div class="btn-cancel">
-							<button class="cancel" style="background-color: mediumseagreen" type="submit">Buy</button>
-						</div>
-					</div>
-					<a class="home" href="/">home</a>
 				</form>
 			</div>
 		</div>
-		<script src="/js/buy.js"></script>
+		
+		<div class="cotain-product-rel">
+				<div class="product-rel">
+					<p class="title-product-rel">Best Seller</p>
+					<div class="image-container">
+						<div class="card h-100" th:each="top4BestSeller : ${top4BestSeller}">
+							<a th:href="'/detail-product?id=' + ${top4BestSeller.getP().getId()}">
+								<img class="card-img-top" th:src="${top4BestSeller.getPic()}" alt="">
+							</a>
+							<p style="font-size: 100%; word-wrap: break-word;" class="card-title">
+											<a th:href="'/detail-product?id=' + ${top4BestSeller.getP().getId()}"
+												th:text="${top4BestSeller.getP().getTen_san_pham()}">
+											</a>
+						</div>
+					</div>
+				</div>
+			</div>
 
+
+		<th:include th:fragment="stylesheets">
+			<link href="/css/buy.css" rel="stylesheet">
+		</th:include>
+
+		<script src="/js/buy.js"></script>
 	</section>
-	<!--CSS-->
-	<th:include th:fragment="stylesheets">
-		<link href="/css/buy.css" rel="stylesheet">
-	</th:include>
 </body>
 
 </html>

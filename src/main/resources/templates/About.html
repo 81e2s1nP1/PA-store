@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
 <html>
 
 <head>
@@ -9,45 +10,61 @@
 </head>
 
 <body>
-	<form>
+	<section>
 		<div class="container">
-			<div class="form-outline mb-4">
-				<input type="text" id="form3Example1q" class="form-control" name="username"
-					th:value="${user.getUsername()}" />
-				<label class="form-label" for="form3Example1q">Name</label>
+			<div class="contain-infor">
+				<div class="text-center">
+					<h3 style="color: rgb(95, 95, 95);">My Profile</h3>
+					<p>Manage and protect your account</p>
+					<div th:if="${message != null}" class="alert alert-success text-center	">
+						[[${message}]]
+					</div>
+				</div>
+				<hr class="separator-line">
+				<div class="infor">
+					<div class="form-outline mb-4">
+						<form action="update-about" method="post">
+							<label class="form-label" for="form3Example1q">Name</label>
+							<input type="text" id="form3Example1q" class="form-control" name="username"
+								th:value="${about.getUsername()}" />
+
+							<div class="form-outline mb-4">
+								<label class="form-label" for="form3Example1q">Address</label>
+								<input type="text" id="form3Example1q" class="form-control" name="address"
+									th:value="${about.getAddress()}" />
+							</div>
+
+							<div class="form-outline mb-4">
+								<label class="form-label" for="form3Example1q">Phone</label>
+								<input type="text" id="form3Example1q" class="form-control" name="phone"
+									th:value="${about.getPhone()}" />
+							</div>
+
+							<div class="form-outline datepicker">
+								<label for="exampleDatepicker1" class="form-label">Select a date</label>
+								<input type="date" class="form-control" id="exampleDatepicker1" name="dateofbirth"
+									locale="en-US" th:value="${dob}" />
+							</div>
+
+							<div class="col-md-6 mb-4">
+								<select class="select" name="sex">
+									<option value="1" disabled>Gender</option>
+									<option value="2" th:selected="${about.getSex().equals('2')}">Female</option>
+									<option value="3" th:selected="${about.getSex().equals('3')}">Male</option>
+								</select>
+							</div>
+							<button type="submit" class="btn btn-success">Save</button>
+						</form>
+					</div>
+				</div>
 			</div>
-
-			<div class="form-outline mb-4">
-				<input type="text" id="form3Example1q" class="form-control" name="address"
-					th:value="${user.getAddress()}" />
-				<label class="form-label" for="form3Example1q">Address</label>
-			</div>
-
-			<div class="form-outline mb-4">
-				<input type="text" id="form3Example1q" class="form-control" name="phone"
-					th:value="${user.getPhone()}" />
-				<label class="form-label" for="form3Example1q">Phone</label>
-			</div>
-
-			<div class="form-outline datepicker">
-				<input type="date" class="form-control" id="exampleDatepicker1" name="dateofbirth" locale="en-US"
-					th:value="${dob}" />
-				<label for="exampleDatepicker1" class="form-label">Select a date</label>
-			</div>
-
-			<div class="col-md-6 mb-4">
-
-				<select class="select" name="sex">
-					<option value="1" disabled>Gender</option>
-					<option value="2" th:selected="${user.getSex().equals('2')}">Female</option>
-					<option value="3" th:selected="${user.getSex().equals('3')}">Male</option>
-				</select>
-
-			</div>
-
-			<button type="submit" class="btn btn-primary">Submit</button>
 		</div>
-	</form>
+
+		<th:include th:fragment="stylesheets">
+			<link rel="stylesheet" href="/css/about.css">
+		</th:include>
+	</section>
+
 </body>
 
 </html>

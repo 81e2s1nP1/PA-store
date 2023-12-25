@@ -14,18 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
 public class User {
 	@Id
 	@GeneratedValue(strategy =  GenerationType.IDENTITY)
@@ -56,37 +45,25 @@ public class User {
 		return id;
 	}
 
-
-
 	public void setId(int id) {
 		this.id = id;
 	}
-
-
 
 	public String getUsername() {
 		return username;
 	}
 
-
-
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
-
 
 	public String getAddress() {
 		return address;
 	}
 
-
-
 	public void setAddress(String address) {
 		this.address = address;
 	}
-
-
 
 	public Date getNgaysinh() {
 		return ngaysinh;
@@ -97,8 +74,6 @@ public class User {
 	public void setNgaysinh(Date ngaysinh) {
 		this.ngaysinh = ngaysinh;
 	}
-
-
 
 	public String getPhone() {
 		return phone;
@@ -150,8 +125,6 @@ public class User {
 	public String getVerification() {
 		return verification;
 	}
-
-
 
 	public void setVerification(String verification) {
 		this.verification = verification;

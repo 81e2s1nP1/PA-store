@@ -1,26 +1,18 @@
 package com.pa.model;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
 public class Product {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,15 +23,13 @@ public class Product {
 	private int giaban;
 	@NotNull
 	private String mota;
-	@NotNull
-	private String danhgia;
 	@Min(value = 0)
 	private int soluong;
 	@Min(value = 0)
-	@Max(value = 500000)
+	@Max(value = 10)
 	private int sale;
-	@Lob
-	private String picture;
+	@OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+    private List<Orders> orders;
 	
 	public int getId() {
 		return id;
@@ -73,14 +63,6 @@ public class Product {
 		this.mota = mota;
 	}
 
-	public String getDanhgia() {
-		return danhgia;
-	}
-
-	public void setDanhgia(String danhgia) {
-		this.danhgia = danhgia;
-	}
-
 	public int getSoluong() {
 		return soluong;
 	}
@@ -97,17 +79,17 @@ public class Product {
 		this.sale = sale;
 	}
 
-	public String getPicture() {
-		return picture;
+	public List<Orders> getOrders() {
+		return orders;
 	}
 
-	public void setPicture(String picture) {
-		this.picture = picture;
+	public void setOrders(List<Orders> orders) {
+		this.orders = orders;
 	}
 
 	@Override
 	public String toString() {
 		return "Product [id=" + id + ", ten_san_pham=" + ten_san_pham + ", giaban=" + giaban + ", mota=" + mota
-				+ ", danhgia=" + danhgia + ", soluong=" + soluong + "]";
+				+ ", soluong=" + soluong + "]";
 	}	
 }
